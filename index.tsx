@@ -23,7 +23,7 @@ interface SolanaTokensContextType {
 const SolanaTokensContext = createContext<SolanaTokensContextType | undefined>(undefined);
 
 // Provider component
-export const SolanaTokensProvider: React.FC = ({ children }: SolanaTokensProviderProps) => {
+export const SolanaTokensProvider: React.FC<SolanaTokensProviderProps> = ({children}) => {
     // Function to fetch strict tokens
     const getStrictTokens = async () => {
         const response = await fetch('https://token.jup.ag/strict');

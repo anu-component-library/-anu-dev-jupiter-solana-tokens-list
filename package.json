@@ -1,6 +1,6 @@
 {
   "name": "@anu-dev/jupiter-solana-tokens-list",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "React Provider for Solana Token List provided by Jup.ag",
   "main": "index.js",
   "scripts": {
