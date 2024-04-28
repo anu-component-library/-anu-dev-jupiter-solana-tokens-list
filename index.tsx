@@ -1,7 +1,9 @@
-import React, {createContext, useContext} from 'react';
-
+import React, {createContext, useContext, ReactNode} from 'react';
+export interface SolanaTokensProviderProps {
+    children: ReactNode;
+}
 // Define the structure of the tokens now named SolanaToken based on the given API response format
-interface SolanaToken {
+export interface SolanaToken {
     address: string;
     chainId: number;
     decimals: number;
@@ -21,7 +23,7 @@ interface SolanaTokensContextType {
 const SolanaTokensContext = createContext<SolanaTokensContextType | undefined>(undefined);
 
 // Provider component
-export const SolanaTokensProvider: React.FC = ({children}) => {
+export const SolanaTokensProvider: React.FC = ({ children }: SolanaTokensProviderProps) => {
     // Function to fetch strict tokens
     const getStrictTokens = async () => {
         const response = await fetch('https://token.jup.ag/strict');
