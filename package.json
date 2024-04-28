@@ -1,0 +1,26 @@
+{
+  "name": "@anu-dev/jupiter-solana-tokens-list",
+  "version": "1.0.0",
+  "description": "React Provider for Solana Token List provided by Jup.ag",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "solana",
+    "jupiter",
+    "jup",
+    "tokens",
+    "react",
+    "react",
+    "native"
+  ],
+  "repository": {
+    "git": "https://github.com/anu-component-library/jupiter-solana-tokens-list.git"
+  },
+  "author": "anu.dev",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
