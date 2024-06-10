@@ -1,8 +1,10 @@
-import React, {createContext, useContext, ReactNode} from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+
 export interface SolanaTokensProviderProps {
     children: ReactNode;
+    autoLoad?: 'strict' | 'all' | 'all+banned';  // Updated to include 'all+banned'
 }
-// Define the structure of the tokens now named SolanaToken based on the given API response format
+
 export interface SolanaToken {
     address: string;
     chainId: number;
@@ -10,28 +12,28 @@ export interface SolanaToken {
     name: string;
     symbol: string;
     logoURI: string;
-    tags?: string[];  // Tags are now optional
-    extensions?: Record<string, string>;  // Extensions are now optional and can have any string key and string value
+    tags?: string[];
+    extensions?: Record<string, string>;
 }
 
-// Create a context with the token functions now named SolanaTokensContextType
 interface SolanaTokensContextType {
     getStrictTokens: () => Promise<SolanaToken[]>;
     getAllTokens: (includeBanned?: boolean) => Promise<SolanaToken[]>;
+    solTokens: SolanaToken[]; // Exposing the tokens
 }
 
 const SolanaTokensContext = createContext<SolanaTokensContextType | undefined>(undefined);
 
-// Provider component
-export const SolanaTokensProvider: React.FC<SolanaTokensProviderProps> = ({children}) => {
-    // Function to fetch strict tokens
+export const SolanaTokensProvider: React.FC<SolanaTokensProviderProps> = ({ children, autoLoad }) => {
+    const [solTokens, setSolTokens] = useState<SolanaToken[]>([]); // State to store the tokens
+
     const getStrictTokens = async () => {
         const response = await fetch('https://token.jup.ag/strict');
         const data = await response.json() as SolanaToken[];
+        setSolTokens(data); // Update state with fetched tokens
         return data;
     };
 
-    // Function to fetch all tokens with an optional includeBanned parameter
     const getAllTokens = async (includeBanned?: boolean) => {
         let url = 'https://token.jup.ag/all';
         if (includeBanned) {
@@ -39,14 +41,32 @@ export const SolanaTokensProvider: React.FC<SolanaTokensProviderProps> = ({child
         }
         const response = await fetch(url);
         const data = await response.json() as SolanaToken[];
+        setSolTokens(data); // Update state with fetched tokens
         return data;
     };
 
-    // Provide the context value
     const value = {
         getStrictTokens,
         getAllTokens,
+        solTokens, // Expose the tokens through the context
     };
+
+    useEffect(() => {
+        switch (autoLoad) {
+            case 'strict':
+                getStrictTokens();
+                break;
+            case 'all':
+                getAllTokens();
+                break;
+            case 'all+banned':
+                getAllTokens(true); // Pass true to include banned tokens
+                break;
+            default:
+                // No auto-load action if autoLoad prop is not set or set to an unrecognized value
+                break;
+        }
+    }, [autoLoad]);  // Dependency array includes autoLoad
 
     return (
         <SolanaTokensContext.Provider value={value}>
@@ -55,7 +75,6 @@ export const SolanaTokensProvider: React.FC<SolanaTokensProviderProps> = ({child
     );
 };
 
-// Custom hook to use the SolanaTokens context
 export const useSolanaTokens = (): SolanaTokensContextType => {
     const context = useContext(SolanaTokensContext);
     if (context === undefined) {
